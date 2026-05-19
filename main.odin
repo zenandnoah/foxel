@@ -18,17 +18,31 @@ main :: proc() {
 		projection = .PERSPECTIVE,
 	}
 
-	tex := rl.LoadTexture("test.png")
+	tex := rl.LoadTexture("assets/textures/awesome_stone.png")
+	defer rl.UnloadTexture(tex)
+	mesh := rl.GenMeshPlane(1, 1, 1, 1)
+	model := rl.LoadModelFromMesh(mesh)
+	rl.SetMaterialTexture(&model.materials[0], .ALBEDO, tex)
+	// model.transform = rl.MatrixRotateX(1)
+
 	for !rl.WindowShouldClose() {
 		rl.BeginDrawing()
 		defer rl.EndDrawing()
-		rl.ClearBackground(rl.RAYWHITE)
+		rl.ClearBackground(rl.BLUE)
 		rl.BeginMode3D(camera)
 
-		rl.DrawCube(rl.Vector3{0, 0, 0}, 1, 1, 1, rl.ORANGE)
-		rl.DrawCubeWires(rl.Vector3{0, 0, 0}, 1, 1, 1, rl.BLACK)
-		rl.DrawBillboard(camera, tex, rl.Vector3{5, 5, 5}, 1, rl.WHITE)
-		rl.DrawModel()
+		rl.DrawModel(model, rl.Vector3{1, 0, 1}, 1, rl.WHITE)
+		rl.DrawModel(model, rl.Vector3{2, 0, 1}, 1, rl.WHITE)
+		rl.DrawModel(model, rl.Vector3{3, 0, 1}, 1, rl.WHITE)
+		rl.DrawModel(model, rl.Vector3{4, 0, 1}, 1, rl.WHITE)
+		rl.DrawModel(model, rl.Vector3{5, 0, 1}, 1, rl.WHITE)
+		rl.DrawModel(model, rl.Vector3{6, 0, 1}, 1, rl.WHITE)
+		rl.DrawModel(model, rl.Vector3{1, 0, 0}, 1, rl.WHITE)
+		rl.DrawModel(model, rl.Vector3{2, 0, 0}, 1, rl.WHITE)
+		rl.DrawModel(model, rl.Vector3{3, 0, 0}, 1, rl.WHITE)
+		rl.DrawModel(model, rl.Vector3{4, 0, 0}, 1, rl.WHITE)
+		rl.DrawModel(model, rl.Vector3{5, 0, 0}, 1, rl.WHITE)
+		rl.DrawModel(model, rl.Vector3{6, 0, 0}, 1, rl.WHITE)
 		rl.EndMode3D()
 		rl.DrawFPS(10, 40)
 		rl.UpdateCamera(&camera, .FIRST_PERSON)

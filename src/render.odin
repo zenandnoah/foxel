@@ -35,10 +35,10 @@ render_face :: proc(side: Side, texture: ^rl.Texture2D, coordinate: rl.Vector3) 
 		model.transform = rl.MatrixRotateX(-math.PI / 2)
 		rl.DrawModel(model, coordinate + rl.Vector3{.5, .5, 0}, 1, rl.WHITE)
 	case .left:
-		model.transform = rl.MatrixRotateZ(-math.PI / 2)
+		model.transform = rl.MatrixRotateXYZ(rl.Vector3{math.PI / 2, 0, -math.PI / 2})
 		rl.DrawModel(model, coordinate + rl.Vector3{1, .5, .5}, 1, rl.WHITE)
 	case .right:
-		model.transform = rl.MatrixRotateZ(math.PI / 2)
+		model.transform = rl.MatrixRotateXYZ(rl.Vector3{math.PI / 2, 0, math.PI / 2})
 		rl.DrawModel(model, coordinate + rl.Vector3{0, .5, .5}, 1, rl.WHITE)
 	case .top:
 		rl.DrawModel(model, coordinate + rl.Vector3{.5, 1, .5}, 1, rl.WHITE)

@@ -35,6 +35,8 @@ main :: proc() {
 	chunks := make(map[[2]i32]^Chunk)
 	first_chunk := new(Chunk)
 	first_chunk.blocks[0] = .stone
+	first_chunk.blocks[16] = .stone
+	first_chunk.blocks[17] = .stone
 	first_chunk.blocks[1] = .stone_cobble
 	first_chunk.blocks[2] = .stone_cobble
 	first_chunk.blocks[3] = .stone_cobble

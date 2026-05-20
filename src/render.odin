@@ -15,12 +15,12 @@ render_chunk :: proc(chunk: ^Chunk, blocks: ^map[string]Block) {
 
 render_block :: proc(block: ^Block, coordinate: rl.Vector3) {
 
-	render_face(.front, &block^.textures.front, coordinate)
-	render_face(.left, &block^.textures.left, coordinate)
-	render_face(.right, &block^.textures.right, coordinate)
-	render_face(.back, &block^.textures.back, coordinate)
-	render_face(.top, &block^.textures.top, coordinate)
-	render_face(.bottom, &block^.textures.bottom, coordinate)
+	render_face(.front, block.textures.front, coordinate)
+	render_face(.left, block.textures.left, coordinate)
+	render_face(.right, block.textures.right, coordinate)
+	render_face(.back, block.textures.back, coordinate)
+	render_face(.top, block.textures.top, coordinate)
+	render_face(.bottom, block.textures.bottom, coordinate)
 }
 render_face :: proc(side: Side, texture: ^rl.Texture2D, coordinate: rl.Vector3) {
 	mesh := rl.GenMeshPlane(1, 1, 1, 1)

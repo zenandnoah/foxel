@@ -26,6 +26,28 @@ load_textures :: proc(blocks: ^map[string]Block) {
 			bottom = rl.LoadTexture("assets/textures/stone.png"),
 		},
 	}
+	blocks["stone_cobble"] = Block {
+		display_name = "Stone Cobble",
+		textures = BlockTextures {
+			front = rl.LoadTexture("assets/textures/stone_cobble.png"),
+			back = rl.LoadTexture("assets/textures/stone_cobble.png"),
+			left = rl.LoadTexture("assets/textures/stone_cobble.png"),
+			right = rl.LoadTexture("assets/textures/stone_cobble.png"),
+			top = rl.LoadTexture("assets/textures/stone_cobble.png"),
+			bottom = rl.LoadTexture("assets/textures/stone_cobble.png"),
+		},
+	}
+	blocks["stone_brick"] = Block {
+		display_name = "Stone Brick",
+		textures = BlockTextures {
+			front = rl.LoadTexture("assets/textures/stone_brick.png"),
+			back = rl.LoadTexture("assets/textures/stone_brick.png"),
+			left = rl.LoadTexture("assets/textures/stone_brick.png"),
+			right = rl.LoadTexture("assets/textures/stone_brick.png"),
+			top = rl.LoadTexture("assets/textures/stone_brick.png"),
+			bottom = rl.LoadTexture("assets/textures/stone_brick.png"),
+		},
+	}
 }
 unload_textures :: proc(blocks: ^map[string]Block) {
 	for block in blocks {

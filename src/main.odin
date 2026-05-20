@@ -1,6 +1,5 @@
 package foxel
 
-import "core:math"
 import rl "vendor:raylib"
 
 Side :: enum {

@@ -3,11 +3,20 @@ package foxel
 import "core:math"
 import rl "vendor:raylib"
 
-render_face :: proc(side: Side, texture: rl.Texture2D, coordinate: rl.Vector3) {
+render_block :: proc(block: ^Block, coordinate: rl.Vector3) {
+
+	render_face(.front, block^.textures.front, coordinate)
+	render_face(.left, block^.textures.left, coordinate)
+	render_face(.right, block^.textures.right, coordinate)
+	render_face(.back, block^.textures.back, coordinate)
+	render_face(.top, block^.textures.top, coordinate)
+	render_face(.bottom, block^.textures.bottom, coordinate)
+}
+render_face :: proc(side: Side, texture: ^rl.Texture2D, coordinate: rl.Vector3) {
 	mesh := rl.GenMeshPlane(1, 1, 1, 1)
 	model := rl.LoadModelFromMesh(mesh)
 	defer rl.UnloadModel(model)
-	rl.SetMaterialTexture(&model.materials[0], .ALBEDO, texture)
+	rl.SetMaterialTexture(&model.materials[0], .ALBEDO, texture^)
 	#partial switch (side) {
 	case .front:
 		model.transform = rl.MatrixRotateX(math.PI / 2)

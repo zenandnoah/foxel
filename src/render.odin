@@ -6,6 +6,7 @@ import rl "vendor:raylib"
 render_face :: proc(side: Side, texture: rl.Texture2D, coordinate: rl.Vector3) {
 	mesh := rl.GenMeshPlane(1, 1, 1, 1)
 	model := rl.LoadModelFromMesh(mesh)
+	defer rl.UnloadModel(model)
 	rl.SetMaterialTexture(&model.materials[0], .ALBEDO, texture)
 	#partial switch (side) {
 	case .front:

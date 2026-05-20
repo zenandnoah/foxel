@@ -18,17 +18,41 @@ Block :: struct {
 BlockID :: enum {
 	empty = 0,
 	stone,
+	stone_cobble,
+	stone_brick,
 }
 load_textures :: proc(blocks: ^map[string]Block) {
 	blocks["stone"] = Block {
 		display_name = "Stone",
 		textures = BlockTextures {
-			front = rl.LoadTexture("assets/textures/awesome_stone.png"),
-			back = rl.LoadTexture("assets/textures/awesome_stone.png"),
-			left = rl.LoadTexture("assets/textures/awesome_stone.png"),
-			right = rl.LoadTexture("assets/textures/awesome_stone.png"),
-			top = rl.LoadTexture("assets/textures/awesome_stone.png"),
-			bottom = rl.LoadTexture("assets/textures/awesome_stone.png"),
+			front = rl.LoadTexture("assets/textures/stone.png"),
+			back = rl.LoadTexture("assets/textures/stone.png"),
+			left = rl.LoadTexture("assets/textures/stone.png"),
+			right = rl.LoadTexture("assets/textures/stone.png"),
+			top = rl.LoadTexture("assets/textures/stone.png"),
+			bottom = rl.LoadTexture("assets/textures/stone.png"),
+		},
+	}
+	blocks["stone_cobble"] = Block {
+		display_name = "Stone Cobble",
+		textures = BlockTextures {
+			front = rl.LoadTexture("assets/textures/stone_cobble.png"),
+			back = rl.LoadTexture("assets/textures/stone_cobble.png"),
+			left = rl.LoadTexture("assets/textures/stone_cobble.png"),
+			right = rl.LoadTexture("assets/textures/stone_cobble.png"),
+			top = rl.LoadTexture("assets/textures/stone_cobble.png"),
+			bottom = rl.LoadTexture("assets/textures/stone_cobble.png"),
+		},
+	}
+	blocks["stone_brick"] = Block {
+		display_name = "Stone Brick",
+		textures = BlockTextures {
+			front = rl.LoadTexture("assets/textures/stone_brick.png"),
+			back = rl.LoadTexture("assets/textures/stone_brick.png"),
+			left = rl.LoadTexture("assets/textures/stone_brick.png"),
+			right = rl.LoadTexture("assets/textures/stone_brick.png"),
+			top = rl.LoadTexture("assets/textures/stone_brick.png"),
+			bottom = rl.LoadTexture("assets/textures/stone_brick.png"),
 		},
 	}
 }

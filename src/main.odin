@@ -35,6 +35,8 @@ main :: proc() {
 	chunks := make(map[[2]i32]^Chunk)
 	first_chunk := new(Chunk)
 	first_chunk.blocks[0] = .stone
+	first_chunk.blocks[1] = .stone_cobble
+	first_chunk.blocks[2] = .stone_brick
 	chunks[[2]i32{0, 0}] = first_chunk
 	for !rl.WindowShouldClose() {
 		rl.BeginDrawing()

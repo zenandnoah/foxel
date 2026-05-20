@@ -1,5 +1,8 @@
 package foxel
 
+import "core:fmt"
+import "core:os"
+import "core:strings"
 import rl "vendor:raylib"
 
 BlockTextures :: struct {
@@ -21,44 +24,55 @@ BlockID :: enum {
 	stone_cobble,
 	stone_brick,
 }
-stone: rl.Texture2D
-stone_cobble: rl.Texture2D
-stone_brick: rl.Texture2D
+textures: map[string]rl.Texture2D
 load_textures :: proc(blocks: ^map[string]Block) {
-	stone = rl.LoadTexture("assets/textures/stone.png")
+	textures := make(map[string]rl.Texture2D)
+	texture_dir, err := os.open("assets/textures")
+	if (err != 0) {
+		fmt.println("Could not open textures directory")
+		return
+	}
+	defer os.close(texture_dir)
+	file_infos, read_err := os.read_all_directory(texture_dir, context.allocator)
+	if (read_err != 0) {
+		fmt.println("Couldn't read textures directory")
+		return
+	}
+	for file in file_infos {
+		name := strings.trim_suffix(file.name, ".png")
+		textures[name] = rl.LoadTexture(fmt.ctprintf("assets/textures/%s", file.name))
+	}
 	blocks["stone"] = Block {
 		display_name = "Stone",
 		textures = BlockTextures {
-			front = &stone,
-			back = &stone,
-			left = &stone,
-			right = &stone,
-			top = &stone,
-			bottom = &stone,
+			front = &textures["stone"],
+			back = &textures["stone"],
+			left = &textures["stone"],
+			right = &textures["stone"],
+			top = &textures["stone"],
+			bottom = &textures["stone"],
 		},
 	}
-	stone_cobble = rl.LoadTexture("assets/textures/stone_cobble.png")
 	blocks["stone_cobble"] = Block {
 		display_name = "Stone Cobble",
 		textures = BlockTextures {
-			front = &stone_cobble,
-			back = &stone_cobble,
-			left = &stone_cobble,
-			right = &stone_cobble,
-			top = &stone_cobble,
-			bottom = &stone_cobble,
+			front = &textures["stone_cobble"],
+			back = &textures["stone_cobble"],
+			left = &textures["stone_cobble"],
+			right = &textures["stone_cobble"],
+			top = &textures["stone_cobble"],
+			bottom = &textures["stone_cobble"],
 		},
 	}
-	stone_brick = rl.LoadTexture("assets/textures/stone_brick.png")
 	blocks["stone_brick"] = Block {
 		display_name = "Stone Brick",
 		textures = BlockTextures {
-			front = &stone_brick,
-			back = &stone_brick,
-			left = &stone_brick,
-			right = &stone_brick,
-			top = &stone_brick,
-			bottom = &stone_brick,
+			front = &textures["stone_brick"],
+			back = &textures["stone_brick"],
+			left = &textures["stone_brick"],
+			right = &textures["stone_brick"],
+			top = &textures["stone_brick"],
+			bottom = &textures["stone_brick"],
 		},
 	}
 }

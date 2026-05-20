@@ -12,8 +12,8 @@ Side :: enum {
 	bottom,
 }
 main :: proc() {
-	width := i32(1366)
-	height := i32(768)
+	width := i32(1920)
+	height := i32(1080)
 	rl.InitWindow(width, height, "box2d-raylib")
 	defer rl.CloseWindow()
 

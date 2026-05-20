@@ -1,7 +1,17 @@
 package foxel
 
+import "core:fmt"
 import "core:math"
 import rl "vendor:raylib"
+
+render_chunk :: proc(chunk: ^Chunk, blocks: ^map[string]Block) {
+	for block, index in chunk.blocks {
+		if (block == .empty) {continue}
+		coordinate := index_to_coordinate(index)
+		render_block(&blocks[fmt.tprint(block)], coordinate)
+	}
+}
+
 
 render_block :: proc(block: ^Block, coordinate: rl.Vector3) {
 

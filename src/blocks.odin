@@ -14,6 +14,11 @@ Block :: struct {
 	display_name: string,
 	textures:     BlockTextures,
 }
+
+BlockID :: enum {
+	empty,
+	stone,
+}
 load_textures :: proc(blocks: ^map[string]Block) {
 	blocks["stone"] = Block {
 		display_name = "Stone",

@@ -36,7 +36,12 @@ main :: proc() {
 	first_chunk := new(Chunk)
 	first_chunk.blocks[0] = .stone
 	first_chunk.blocks[1] = .stone_cobble
-	first_chunk.blocks[2] = .stone_brick
+	first_chunk.blocks[2] = .stone_cobble
+	first_chunk.blocks[3] = .stone_cobble
+	first_chunk.blocks[4] = .stone_brick
+	first_chunk.blocks[5] = .stone_brick
+	first_chunk.blocks[6] = .stone_brick
+
 	chunks[[2]i32{0, 0}] = first_chunk
 	for !rl.WindowShouldClose() {
 		rl.BeginDrawing()

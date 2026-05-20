@@ -14,7 +14,7 @@ Side :: enum {
 main :: proc() {
 	width := i32(1920)
 	height := i32(1080)
-	rl.InitWindow(width, height, "box2d-raylib")
+	rl.InitWindow(width, height, "foxel")
 	defer rl.CloseWindow()
 
 	rl.SetTargetFPS(180)

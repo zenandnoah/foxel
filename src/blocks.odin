@@ -16,7 +16,7 @@ Block :: struct {
 }
 
 BlockID :: enum {
-	empty,
+	empty = 0,
 	stone,
 }
 load_textures :: proc(blocks: ^map[string]Block) {

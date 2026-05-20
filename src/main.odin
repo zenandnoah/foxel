@@ -32,15 +32,18 @@ main :: proc() {
 	defer unload_textures(&blocks)
 	mono := rl.LoadFont("assets/fonts/ticketing.regular.ttf")
 	defer rl.UnloadFont(mono)
-	example_chunk := Chunk{}
-	example_chunk.blocks[0] = .stone
-	example_chunk.blocks[1] = .stone
+	chunks := make(map[[2]i32]^Chunk)
+	first_chunk := new(Chunk)
+	first_chunk.blocks[0] = .stone
+	chunks[[2]i32{0, 0}] = first_chunk
 	for !rl.WindowShouldClose() {
 		rl.BeginDrawing()
 		defer rl.EndDrawing()
 		rl.ClearBackground(rl.BLUE)
 		rl.BeginMode3D(camera)
-		render_chunk(&example_chunk, &blocks)
+		for chunk in chunks {
+			render_chunk(chunks[chunk], &blocks)
+		}
 		rl.DrawGrid(50, 1)
 		rl.EndMode3D()
 		rl.DrawFPS(10, 40)

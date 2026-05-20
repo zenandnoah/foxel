@@ -18,12 +18,12 @@ load_textures :: proc(blocks: ^map[string]Block) {
 	blocks["stone"] = Block {
 		display_name = "Stone",
 		textures = BlockTextures {
-			front = rl.LoadTexture("assets/textures/awesome_stone.png"),
-			back = rl.LoadTexture("assets/textures/awesome_stone.png"),
-			left = rl.LoadTexture("assets/textures/awesome_stone.png"),
-			right = rl.LoadTexture("assets/textures/awesome_stone.png"),
-			top = rl.LoadTexture("assets/textures/awesome_stone.png"),
-			bottom = rl.LoadTexture("assets/textures/awesome_stone.png"),
+			front = rl.LoadTexture("assets/textures/stone.png"),
+			back = rl.LoadTexture("assets/textures/stone.png"),
+			left = rl.LoadTexture("assets/textures/stone.png"),
+			right = rl.LoadTexture("assets/textures/stone.png"),
+			top = rl.LoadTexture("assets/textures/stone.png"),
+			bottom = rl.LoadTexture("assets/textures/stone.png"),
 		},
 	}
 }

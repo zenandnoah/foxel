@@ -8,6 +8,8 @@ render_chunk :: proc(chunk: ^Chunk, blocks: ^map[string]Block) {
 	for block, index in chunk.blocks {
 		if (block == .empty) {continue}
 		coordinate := index_to_coordinate(index)
+		coordinate[0] += f32(chunk.position.x) * CHUNK_X
+		coordinate[2] += f32(chunk.position.z) * CHUNK_Z
 		render_block(&blocks[fmt.tprint(block)], coordinate)
 	}
 }
@@ -15,12 +17,12 @@ render_chunk :: proc(chunk: ^Chunk, blocks: ^map[string]Block) {
 
 render_block :: proc(block: ^Block, coordinate: rl.Vector3) {
 
-	render_face(.front, &block^.textures.front, coordinate)
-	render_face(.left, &block^.textures.left, coordinate)
-	render_face(.right, &block^.textures.right, coordinate)
-	render_face(.back, &block^.textures.back, coordinate)
-	render_face(.top, &block^.textures.top, coordinate)
-	render_face(.bottom, &block^.textures.bottom, coordinate)
+	render_face(.front, block.textures.front, coordinate)
+	render_face(.left, block.textures.left, coordinate)
+	render_face(.right, block.textures.right, coordinate)
+	render_face(.back, block.textures.back, coordinate)
+	render_face(.top, block.textures.top, coordinate)
+	render_face(.bottom, block.textures.bottom, coordinate)
 }
 render_face :: proc(side: Side, texture: ^rl.Texture2D, coordinate: rl.Vector3) {
 	mesh := rl.GenMeshPlane(1, 1, 1, 1)

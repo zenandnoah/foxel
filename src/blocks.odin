@@ -1,14 +1,17 @@
 package foxel
 
+import "core:fmt"
+import "core:os"
+import "core:strings"
 import rl "vendor:raylib"
 
 BlockTextures :: struct {
-	front:  rl.Texture2D,
-	back:   rl.Texture2D,
-	left:   rl.Texture2D,
-	right:  rl.Texture2D,
-	top:    rl.Texture2D,
-	bottom: rl.Texture2D,
+	front:  ^rl.Texture2D,
+	back:   ^rl.Texture2D,
+	left:   ^rl.Texture2D,
+	right:  ^rl.Texture2D,
+	top:    ^rl.Texture2D,
+	bottom: ^rl.Texture2D,
 }
 Block :: struct {
 	display_name: string,
@@ -21,49 +24,66 @@ BlockID :: enum {
 	stone_cobble,
 	stone_brick,
 }
+textures: map[string]rl.Texture2D
 load_textures :: proc(blocks: ^map[string]Block) {
+	textures := make(map[string]rl.Texture2D)
+	texture_dir, err := os.open("assets/textures")
+	if (err != 0) {
+		fmt.println("Could not open textures directory")
+		return
+	}
+	defer os.close(texture_dir)
+	file_infos, read_err := os.read_all_directory(texture_dir, context.allocator)
+	if (read_err != 0) {
+		fmt.println("Couldn't read textures directory")
+		return
+	}
+	for file in file_infos {
+		name := strings.trim_suffix(file.name, ".png")
+		textures[name] = rl.LoadTexture(fmt.ctprintf("assets/textures/%s", file.name))
+	}
 	blocks["stone"] = Block {
 		display_name = "Stone",
 		textures = BlockTextures {
-			front = rl.LoadTexture("assets/textures/stone.png"),
-			back = rl.LoadTexture("assets/textures/stone.png"),
-			left = rl.LoadTexture("assets/textures/stone.png"),
-			right = rl.LoadTexture("assets/textures/stone.png"),
-			top = rl.LoadTexture("assets/textures/stone.png"),
-			bottom = rl.LoadTexture("assets/textures/stone.png"),
+			front = &textures["stone"],
+			back = &textures["stone"],
+			left = &textures["stone"],
+			right = &textures["stone"],
+			top = &textures["stone"],
+			bottom = &textures["stone"],
 		},
 	}
 	blocks["stone_cobble"] = Block {
 		display_name = "Stone Cobble",
 		textures = BlockTextures {
-			front = rl.LoadTexture("assets/textures/stone_cobble.png"),
-			back = rl.LoadTexture("assets/textures/stone_cobble.png"),
-			left = rl.LoadTexture("assets/textures/stone_cobble.png"),
-			right = rl.LoadTexture("assets/textures/stone_cobble.png"),
-			top = rl.LoadTexture("assets/textures/stone_cobble.png"),
-			bottom = rl.LoadTexture("assets/textures/stone_cobble.png"),
+			front = &textures["stone_cobble"],
+			back = &textures["stone_cobble"],
+			left = &textures["stone_cobble"],
+			right = &textures["stone_cobble"],
+			top = &textures["stone_cobble"],
+			bottom = &textures["stone_cobble"],
 		},
 	}
 	blocks["stone_brick"] = Block {
 		display_name = "Stone Brick",
 		textures = BlockTextures {
-			front = rl.LoadTexture("assets/textures/stone_brick.png"),
-			back = rl.LoadTexture("assets/textures/stone_brick.png"),
-			left = rl.LoadTexture("assets/textures/stone_brick.png"),
-			right = rl.LoadTexture("assets/textures/stone_brick.png"),
-			top = rl.LoadTexture("assets/textures/stone_brick.png"),
-			bottom = rl.LoadTexture("assets/textures/stone_brick.png"),
+			front = &textures["stone_brick"],
+			back = &textures["stone_brick"],
+			left = &textures["stone_brick"],
+			right = &textures["stone_brick"],
+			top = &textures["stone_brick"],
+			bottom = &textures["stone_brick"],
 		},
 	}
 }
 unload_textures :: proc(blocks: ^map[string]Block) {
 	for block in blocks {
 		t := blocks[block].textures
-		rl.UnloadTexture(t.front)
-		rl.UnloadTexture(t.back)
-		rl.UnloadTexture(t.left)
-		rl.UnloadTexture(t.right)
-		rl.UnloadTexture(t.top)
-		rl.UnloadTexture(t.bottom)
+		rl.UnloadTexture(t.front^)
+		rl.UnloadTexture(t.back^)
+		rl.UnloadTexture(t.left^)
+		rl.UnloadTexture(t.right^)
+		rl.UnloadTexture(t.top^)
+		rl.UnloadTexture(t.bottom^)
 	}
 }

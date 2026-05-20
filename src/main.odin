@@ -14,7 +14,7 @@ Side :: enum {
 main :: proc() {
 	width := i32(1920)
 	height := i32(1080)
-	rl.InitWindow(width, height, "box2d-raylib")
+	rl.InitWindow(width, height, "foxel")
 	defer rl.CloseWindow()
 
 	rl.SetTargetFPS(180)
@@ -32,7 +32,7 @@ main :: proc() {
 	defer unload_textures(&blocks)
 	mono := rl.LoadFont("assets/fonts/ticketing.regular.ttf")
 	defer rl.UnloadFont(mono)
-	chunks := make(map[[2]i32]^Chunk)
+	chunks := make(map[ChunkPos]^Chunk)
 	first_chunk := new(Chunk)
 	first_chunk.blocks[0] = .stone
 	first_chunk.blocks[16] = .stone
@@ -43,8 +43,12 @@ main :: proc() {
 	first_chunk.blocks[4] = .stone_brick
 	first_chunk.blocks[5] = .stone_brick
 	first_chunk.blocks[6] = .stone_brick
-
-	chunks[[2]i32{0, 0}] = first_chunk
+	second_chunk := new(Chunk)
+	second_chunk.blocks[2] = .stone
+	second_chunk.position.z = 1
+	second_chunk.position.x = 1
+	chunks[ChunkPos{}] = first_chunk
+	chunks[ChunkPos{x = 1}] = second_chunk
 	for !rl.WindowShouldClose() {
 		rl.BeginDrawing()
 		defer rl.EndDrawing()

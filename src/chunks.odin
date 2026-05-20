@@ -5,10 +5,13 @@ CHUNK_Y :: 128
 CHUNK_Z :: 16
 Chunk :: struct {
 	blocks:   [CHUNK_X * CHUNK_Y * CHUNK_Z]BlockID,
-	position: rl.Vector2,
+	position: ChunkPos,
 	dirty:    bool,
 }
-
+ChunkPos :: struct {
+	x: i32,
+	z: i32,
+}
 index_to_coordinate :: proc(index: int) -> rl.Vector3 {
 	coordinate: rl.Vector3
 	coordinate[0] = f32(index % CHUNK_X)

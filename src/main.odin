@@ -23,8 +23,8 @@ Block :: struct {
 	textures: BlockTextures,
 }
 main :: proc() {
-	width := i32(1920)
-	height := i32(1080)
+	width := i32(640)
+	height := i32(480)
 	rl.InitWindow(width, height, "box2d-raylib")
 	defer rl.CloseWindow()
 

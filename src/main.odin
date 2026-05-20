@@ -1,6 +1,7 @@
 package foxel
 
 import rl "vendor:raylib"
+import "core:fmt"	
 
 Side :: enum {
 	left,
@@ -28,6 +29,8 @@ main :: proc() {
 
 	tex := rl.LoadTexture("assets/textures/awesome_stone.png")
 	defer rl.UnloadTexture(tex)
+	mono := rl.LoadFont("assets/fonts/ticketing.regular.ttf")
+	defer rl.UnloadFont(mono)
 
 	for !rl.WindowShouldClose() {
 		rl.BeginDrawing()
@@ -44,6 +47,7 @@ main :: proc() {
 		rl.DrawGrid(50, 1)
 		rl.EndMode3D()
 		rl.DrawFPS(10, 40)
+		rl.DrawTextEx(mono, fmt.ctprintf("Pos (%.2f, %.2f, %.2f)", camera.position[0], camera.position[1], camera.position[2]), rl.Vector2{10, 80}, 20, 5, rl.WHITE)
 		rl.UpdateCamera(&camera, .FREE)
 		rl.DisableCursor()
 	}

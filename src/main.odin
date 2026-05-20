@@ -19,7 +19,7 @@ main :: proc() {
 
 	rl.SetTargetFPS(180)
 
-	camera := rl.Camera {
+	camera := rl.Camera3D {
 		position   = {0, 10, 10},
 		target     = {0, 0, 0},
 		up         = {0, 1, 0},
@@ -31,15 +31,6 @@ main :: proc() {
 	defer rl.UnloadTexture(tex)
 
 	for !rl.WindowShouldClose() {
-		vertical_move_amount: f32 = .1
-		if (rl.IsKeyDown(.LEFT_SHIFT)) {
-			camera.position[1] -= vertical_move_amount
-			camera.target[1] -= vertical_move_amount
-		}
-		if (rl.IsKeyDown(.SPACE)) {
-			camera.position[1] += vertical_move_amount
-			camera.target[1] += vertical_move_amount
-		}
 		rl.BeginDrawing()
 		defer rl.EndDrawing()
 		rl.ClearBackground(rl.BLUE)
@@ -54,7 +45,7 @@ main :: proc() {
 		rl.DrawGrid(50, 1)
 		rl.EndMode3D()
 		rl.DrawFPS(10, 40)
-		rl.UpdateCamera(&camera, .FIRST_PERSON)
+		rl.UpdateCamera(&camera, .FREE)
 		rl.DisableCursor()
 	}
 

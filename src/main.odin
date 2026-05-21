@@ -11,6 +11,7 @@ Side :: enum {
 	top,
 	bottom,
 }
+
 main :: proc() {
 	width := i32(1920)
 	height := i32(1080)
@@ -31,11 +32,9 @@ main :: proc() {
 	defer unload_textures()
 	mono := rl.LoadFont("assets/fonts/ticketing.regular.ttf")
 	defer rl.UnloadFont(mono)
-	chunks := make(map[ChunkPos]^Chunk)
-	chunk_one := new(Chunk)
-	load_chunk(chunk_one, ChunkPos{}, "test")
+	chunks = make(map[ChunkPos]^Chunk)
+	load_chunk(ChunkPos{}, "test")
 	// chunk_one.blocks[0] = .stone
-	chunks[ChunkPos{}] = chunk_one
 	for !rl.WindowShouldClose() {
 
 		rl.BeginDrawing()
@@ -43,7 +42,7 @@ main :: proc() {
 		rl.ClearBackground(rl.BLUE)
 		rl.BeginMode3D(camera)
 		for chunk in chunks {
-			render_chunk(chunks[chunk], &blocks)
+			render_chunk(chunk, &blocks)
 		}
 		rl.DrawGrid(50, 1)
 		rl.EndMode3D()
@@ -65,7 +64,7 @@ main :: proc() {
 		rl.DisableCursor()
 	}
 	for chunk in chunks {
-		save_chunk(chunks[chunk], "test")
+		save_chunk(chunk, "test")
 	}
 
 }

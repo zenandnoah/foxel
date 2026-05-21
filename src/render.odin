@@ -4,12 +4,12 @@ import "core:fmt"
 import "core:math"
 import rl "vendor:raylib"
 
-render_chunk :: proc(chunk: ^Chunk, blocks: ^map[string]Block) {
-	for block, index in chunk.blocks {
+render_chunk :: proc(position: ChunkPos, blocks: ^map[string]Block) {
+	for block, index in chunks[position].blocks {
 		if (block == .empty) {continue}
 		coordinate := index_to_coordinate(index)
-		coordinate[0] += f32(chunk.position.x) * CHUNK_X
-		coordinate[2] += f32(chunk.position.z) * CHUNK_Z
+		coordinate[0] += f32(position.x) * CHUNK_X
+		coordinate[2] += f32(position.z) * CHUNK_Z
 		render_block(&blocks[fmt.tprint(block)], coordinate)
 	}
 }

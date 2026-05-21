@@ -33,23 +33,12 @@ main :: proc() {
 	mono := rl.LoadFont("assets/fonts/ticketing.regular.ttf")
 	defer rl.UnloadFont(mono)
 	chunks := make(map[ChunkPos]^Chunk)
-	first_chunk := new(Chunk)
-	first_chunk.blocks[0] = .stone
-	first_chunk.blocks[16] = .stone
-	first_chunk.blocks[17] = .stone
-	first_chunk.blocks[1] = .stone_cobble
-	first_chunk.blocks[2] = .stone_cobble
-	first_chunk.blocks[3] = .stone_cobble
-	first_chunk.blocks[4] = .stone_brick
-	first_chunk.blocks[5] = .stone_brick
-	first_chunk.blocks[6] = .stone_brick
-	second_chunk := new(Chunk)
-	second_chunk.blocks[2] = .stone
-	second_chunk.position.z = 1
-	second_chunk.position.x = 1
-	chunks[ChunkPos{}] = first_chunk
-	chunks[ChunkPos{x = 1}] = second_chunk
+	chunk_one := new(Chunk)
+	load_chunk(chunk_one, ChunkPos{}, "test")
+	// chunk_one.blocks[0] = .stone
+	chunks[ChunkPos{}] = chunk_one
 	for !rl.WindowShouldClose() {
+
 		rl.BeginDrawing()
 		defer rl.EndDrawing()
 		rl.ClearBackground(rl.BLUE)
@@ -75,6 +64,9 @@ main :: proc() {
 		)
 		rl.UpdateCamera(&camera, .FREE)
 		rl.DisableCursor()
+	}
+	for chunk in chunks {
+		save_chunk(chunks[chunk], "test")
 	}
 
 }

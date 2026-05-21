@@ -73,9 +73,14 @@ load_chunk :: proc(position: ChunkPos, world: string) {
 	}
 	chunk := new(Chunk)
 	chunk.position = position
+	first_byte: byte
 	for byte, index in data {
-		if (index == 32768) do break
-		chunk.blocks[index] = BlockID(byte)
+		if (index % 2 == 0) {
+			first_byte = byte
+			continue
+		}
+		if (index == 32768 * 2 - 1) do break
+		chunk.blocks[(index - 1) / 2] = BlockID(first_byte + byte)
 	}
 	chunks[position] = chunk
 }

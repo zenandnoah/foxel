@@ -18,11 +18,11 @@ Block :: struct {
 	textures:     BlockTextures,
 }
 
-BlockID :: enum {
-	empty = 0,
-	stone,
-	stone_cobble,
-	stone_brick,
+BlockID :: enum u16 {
+	empty        = 0,
+	stone        = 1,
+	stone_cobble = 2,
+	stone_brick  = 3,
 }
 textures: map[string]rl.Texture2D
 blocks: map[string]Block

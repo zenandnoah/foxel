@@ -25,8 +25,9 @@ BlockID :: enum {
 	stone_brick,
 }
 textures: map[string]rl.Texture2D
-load_textures :: proc(blocks: ^map[string]Block) {
-	textures := make(map[string]rl.Texture2D)
+blocks: map[string]Block
+load_textures :: proc() {
+	textures = make(map[string]rl.Texture2D)
 	texture_dir, err := os.open("assets/textures")
 	if (err != 0) {
 		fmt.println("Could not open textures directory")
@@ -76,14 +77,8 @@ load_textures :: proc(blocks: ^map[string]Block) {
 		},
 	}
 }
-unload_textures :: proc(blocks: ^map[string]Block) {
-	for block in blocks {
-		t := blocks[block].textures
-		rl.UnloadTexture(t.front^)
-		rl.UnloadTexture(t.back^)
-		rl.UnloadTexture(t.left^)
-		rl.UnloadTexture(t.right^)
-		rl.UnloadTexture(t.top^)
-		rl.UnloadTexture(t.bottom^)
+unload_textures :: proc() {
+	for key in textures {
+		rl.UnloadTexture(textures[key])
 	}
 }

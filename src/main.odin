@@ -27,9 +27,8 @@ main :: proc() {
 		projection = .PERSPECTIVE,
 	}
 
-	blocks := make(map[string]Block)
-	load_textures(&blocks)
-	defer unload_textures(&blocks)
+	load_textures()
+	defer unload_textures()
 	mono := rl.LoadFont("assets/fonts/ticketing.regular.ttf")
 	defer rl.UnloadFont(mono)
 	chunks := make(map[ChunkPos]^Chunk)

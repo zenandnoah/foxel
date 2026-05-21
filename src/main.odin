@@ -36,6 +36,12 @@ main :: proc() {
 	load_chunk(ChunkPos{}, "test")
 	// chunk_one.blocks[0] = .stone
 	for !rl.WindowShouldClose() {
+		ray := rl.Ray{
+			position = camera.position,
+			direction = rl.Vector3Normalize(camera.target - camera.position)
+		}
+
+		hit, block_pos, normal := get_voxel_hit(ray, &chunks)
 
 		rl.BeginDrawing()
 		defer rl.EndDrawing()
@@ -43,6 +49,9 @@ main :: proc() {
 		rl.BeginMode3D(camera)
 		for chunk in chunks {
 			render_chunk(chunk, &blocks)
+		}
+		if hit {
+			rl.DrawCubeWires(block_pos + rl.Vector3{0.5,0.5,0.5}, 1, 1, 1, rl.PURPLE)
 		}
 		rl.DrawGrid(50, 1)
 		rl.EndMode3D()
@@ -56,6 +65,20 @@ main :: proc() {
 				camera.position[2],
 			),
 			rl.Vector2{10, 80},
+			20,
+			5,
+			rl.WHITE,
+		)
+		rl.DrawTextEx(
+			mono,
+			fmt.ctprintf(
+				"Hit %v Sel (%.2f, %.2f, %.2f)",
+				hit,
+				block_pos[0],
+				block_pos[1],
+				block_pos[2],
+			),
+			rl.Vector2{10, 120},
 			20,
 			5,
 			rl.WHITE,

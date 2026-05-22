@@ -19,7 +19,7 @@ generate_chunk :: proc(position: ChunkPos) {
 	chunk := new(Chunk)
 	chunk.position = position
 	for &block, index in chunk.blocks {
-		if (index > 254) do break
+		if (index == 256) do break
 		block = .stone
 	}
 	chunks[position] = chunk

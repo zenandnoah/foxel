@@ -3,6 +3,10 @@ package foxel
 import "core:fmt"
 import rl "vendor:raylib"
 mono: rl.Font
+MIDDLE_X :: RESOLUTION_WIDTH / 2
+MIDDLE_Y :: RESOLUTION_HEIGHT / 2
+CURSOR_LEN :: 20
+CURSOR_THICK :: 2
 draw_gui :: proc(camera: ^rl.Camera3D) {
 	rl.DrawFPS(10, 40)
 	rl.DrawTextEx(
@@ -30,6 +34,18 @@ draw_gui :: proc(camera: ^rl.Camera3D) {
 		rl.Vector2{10, 120},
 		20,
 		5,
+		rl.WHITE,
+	)
+	rl.DrawLineEx(
+		rl.Vector2{MIDDLE_X, MIDDLE_Y - CURSOR_LEN},
+		rl.Vector2{MIDDLE_X, MIDDLE_Y + CURSOR_LEN},
+		CURSOR_THICK,
+		rl.WHITE,
+	)
+	rl.DrawLineEx(
+		rl.Vector2{MIDDLE_X - CURSOR_LEN, MIDDLE_Y},
+		rl.Vector2{MIDDLE_X + CURSOR_LEN, MIDDLE_Y},
+		CURSOR_THICK,
 		rl.WHITE,
 	)
 }

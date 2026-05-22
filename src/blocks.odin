@@ -23,6 +23,7 @@ BlockID :: enum u16 {
 	stone        = 1,
 	stone_cobble = 2,
 	stone_brick  = 3,
+	oak_planks   = 4,
 }
 textures: map[string]rl.Texture2D
 blocks: map[string]Block
@@ -74,6 +75,17 @@ load_textures :: proc() {
 			right = &textures["stone_brick"],
 			top = &textures["stone_brick"],
 			bottom = &textures["stone_brick"],
+		},
+	}
+	blocks["oak_planks"] = Block {
+		display_name = "Oak Planks",
+		textures = BlockTextures {
+			front = &textures["oak_planks"],
+			back = &textures["oak_planks"],
+			left = &textures["oak_planks"],
+			right = &textures["oak_planks"],
+			top = &textures["oak_planks"],
+			bottom = &textures["oak_planks"],
 		},
 	}
 }

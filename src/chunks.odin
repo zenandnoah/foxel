@@ -27,8 +27,8 @@ generate_chunk :: proc(position: ChunkPos) {
 index_to_coordinate :: proc(index: int) -> rl.Vector3 {
 	coordinate: rl.Vector3
 	coordinate[0] = f32(index % CHUNK_X)
-	coordinate[1] = f32((index / CHUNK_X) % CHUNK_Z)
-	coordinate[2] = f32(index / (CHUNK_X * CHUNK_Z))
+	coordinate[1] = f32(index / (CHUNK_X * CHUNK_Z))
+	coordinate[2] = f32((index / CHUNK_X) % CHUNK_Z)
 	return coordinate
 }
 

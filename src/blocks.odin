@@ -76,6 +76,17 @@ load_textures :: proc() {
 			bottom = &textures["stone_brick"],
 		},
 	}
+	blocks["oak_planks"] = Block {
+		display_name = "Oak Planks",
+		textures = BlockTextures {
+			front = &textures["oak_planks"],
+			back = &textures["oak_planks"],
+			left = &textures["oak_planks"],
+			right = &textures["oak_planks"],
+			top = &textures["oak_planks"],
+			bottom = &textures["oak_planks"],
+		},
+	}
 }
 unload_textures :: proc() {
 	for key in textures {

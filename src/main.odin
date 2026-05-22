@@ -34,7 +34,7 @@ main :: proc() {
 	defer rl.UnloadFont(mono)
 	chunks = make(map[ChunkPos]^Chunk)
 	load_chunk(ChunkPos{}, "test")
-	// chunk_one.blocks[0] = .stone
+	// chunks[ChunkPos{0,0}].blocks[coordinate_to_index(rl.Vector3{3,0,0})] = .stone_cobble
 	for !rl.WindowShouldClose() {
 		ray := rl.Ray{
 			position = camera.position,

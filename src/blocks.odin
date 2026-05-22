@@ -23,6 +23,7 @@ BlockID :: enum u16 {
 	stone        = 1,
 	stone_cobble = 2,
 	stone_brick  = 3,
+	oak_planks   = 4,
 }
 textures: map[string]rl.Texture2D
 blocks: map[string]Block

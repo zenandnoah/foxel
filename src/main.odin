@@ -19,7 +19,6 @@ main :: proc() {
 
 	init()
 	defer deinit()
-	chunks = make(map[ChunkPos]^Chunk)
 	load_chunk(ChunkPos{}, "test")
 	// chunk_one.blocks[0] = .stone
 	// chunk_one.blocks[0] = .stone

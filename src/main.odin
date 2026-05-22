@@ -1,6 +1,5 @@
 package foxel
 
-import "core:fmt"
 import rl "vendor:raylib"
 
 Side :: enum {
@@ -23,6 +22,7 @@ main :: proc() {
 	// chunk_one.blocks[0] = .stone
 	// chunk_one.blocks[0] = .stone
 	// chunks[ChunkPos{0,0}].blocks[coordinate_to_index(rl.Vector3{3,0,0})] = .stone_cobble
+	make_atlas()
 	for !rl.WindowShouldClose() {
 		hit, block_pos, normal = get_voxel_hit()
 		rl.BeginDrawing()

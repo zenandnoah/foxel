@@ -1,6 +1,5 @@
 package foxel
 
-import "core:fmt"
 import rl "vendor:raylib"
 MeshBuilder :: struct {
 	vertices:   [dynamic]f32,
@@ -11,7 +10,7 @@ MeshBuilder :: struct {
 }
 mesh_builder: MeshBuilder
 MAX_FACES :: 1000
-update_chunk :: proc(position: ChunkPos) {
+update_chunk_mesh :: proc(position: ChunkPos) {
 	// free previous mesh if it exists
 	if chunks[position].mesh.vertexCount > 0 {
 		rl.UnloadMesh(chunks[position].mesh)

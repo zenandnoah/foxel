@@ -6,10 +6,11 @@ CHUNK_X :: 16
 CHUNK_Y :: 128
 CHUNK_Z :: 16
 Chunk :: struct {
-	blocks:   [CHUNK_X * CHUNK_Y * CHUNK_Z]BlockID,
-	position: ChunkPos,
-	dirty:    bool,
-	mesh:     rl.Mesh,
+	blocks:           [CHUNK_X * CHUNK_Y * CHUNK_Z]BlockID,
+	position:         ChunkPos,
+	dirty:            bool,
+	should_be_loaded: bool,
+	mesh:             rl.Mesh,
 }
 ChunkPos :: struct {
 	x: i32,
@@ -24,6 +25,7 @@ generate_chunk :: proc(position: ChunkPos) {
 		block = .stone
 	}
 	chunks[position] = chunk
+	update_chunk_mesh(position)
 }
 index_to_coordinate :: proc(index: int) -> rl.Vector3 {
 	coordinate: rl.Vector3
@@ -61,14 +63,12 @@ save_chunk :: proc(position: ChunkPos, world: string) {
 load_chunk :: proc(position: ChunkPos, world: string) {
 	file, err := os.open(fmt.tprintf("worlds/%s/%i_%i.cnk", world, position.x, position.z))
 	if err != nil {
-		fmt.println("here")
 		generate_chunk(position)
 		return
 	}
 
 	data, err_data := os.read_entire_file_from_file(file, context.temp_allocator)
 	if (err_data != nil) {
-		fmt.println("there")
 		generate_chunk(position)
 		return
 	}

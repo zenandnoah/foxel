@@ -16,21 +16,50 @@ hit: bool
 block_pos: rl.Vector3
 normal: rl.Vector3
 camera: rl.Camera3D
+chunk_pattern_to_render: [dynamic]ChunkPos
+update_render_distance :: proc(render_distance: i32) {
+	chunk_pattern_to_render = make([dynamic]ChunkPos)
+	for x: i32 = render_distance; x > -render_distance; x -= 1 {
+		for z: i32 = render_distance; z > -render_distance; z -= 1 {
+			if x * x + z * z < render_distance * render_distance {
+				append(&chunk_pattern_to_render, ChunkPos{x, z})
+			}
+		}
+	}
+}
 main :: proc() {
 
 	init()
 	defer deinit()
-	load_chunk(ChunkPos{}, "test")
+	update_render_distance(10)
 	// chunk_one.blocks[0] = .stone
 	// chunk_one.blocks[0] = .stone
 	// chunks[ChunkPos{0,0}].blocks[coordinate_to_index(rl.Vector3{3,0,0})] = .stone_cobble
 	for !rl.WindowShouldClose() {
+		for chunk in chunk_pattern_to_render {
+			chunk_pos := ChunkPos {
+				chunk.x + i32(camera.position.x / CHUNK_X),
+				chunk.z + i32(camera.position.z / CHUNK_Z),
+			}
+			_, loaded := &chunks[chunk_pos]
+			if !loaded {load_chunk(chunk_pos, "test")
+				fmt.println(chunk_pos)
+			}
+			chunks[chunk_pos].should_be_loaded = true
+		}
+
 		hit, block_pos, normal = get_voxel_hit()
 		rl.BeginDrawing()
 		defer rl.EndDrawing()
 		rl.ClearBackground(rl.BLUE)
 		rl.BeginMode3D(camera)
 		for chunk in chunks {
+
+			if !chunks[chunk].should_be_loaded {
+				fmt.println("hm")
+				save_chunk(chunk, "test")
+				continue
+			}
 			if chunks[chunk].dirty {
 				update_chunk_mesh(chunk)
 			}

@@ -37,6 +37,7 @@ update_chunk_mesh :: proc(position: ChunkPos) {
 }
 render_chunk :: proc(position: ChunkPos) {
 	rl.DrawMesh(chunks[position].mesh, material, rl.Matrix(1))
+	chunks[position].should_be_loaded = false
 }
 build_mesh :: proc() -> rl.Mesh {
 	mesh := rl.Mesh{}

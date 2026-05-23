@@ -1,5 +1,6 @@
 package foxel
 
+import "core:fmt"
 import rl "vendor:raylib"
 
 Side :: enum {
@@ -9,6 +10,7 @@ Side :: enum {
 	back,
 	top,
 	bottom,
+	all,
 }
 hit: bool
 block_pos: rl.Vector3
@@ -22,7 +24,6 @@ main :: proc() {
 	// chunk_one.blocks[0] = .stone
 	// chunk_one.blocks[0] = .stone
 	// chunks[ChunkPos{0,0}].blocks[coordinate_to_index(rl.Vector3{3,0,0})] = .stone_cobble
-	make_atlas()
 	for !rl.WindowShouldClose() {
 		hit, block_pos, normal = get_voxel_hit()
 		rl.BeginDrawing()
@@ -30,7 +31,10 @@ main :: proc() {
 		rl.ClearBackground(rl.BLUE)
 		rl.BeginMode3D(camera)
 		for chunk in chunks {
-			render_chunk(chunk, &blocks)
+			if chunks[chunk].dirty {
+				update_chunk(chunk)
+			}
+			render_chunk(chunk)
 		}
 		if hit {
 			rl.DrawCubeWires(block_pos + rl.Vector3{0.5, 0.5, 0.5}, 1, 1, 1, rl.PURPLE)

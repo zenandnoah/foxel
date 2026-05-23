@@ -1,51 +1,115 @@
 package foxel
 
 import "core:fmt"
-import "core:math"
 import rl "vendor:raylib"
-
-render_chunk :: proc(position: ChunkPos, blocks: ^map[string]Block) {
+MeshBuilder :: struct {
+	vertices:   [dynamic]f32,
+	texcoords:  [dynamic]f32,
+	normals:    [dynamic]f32,
+	indices:    [dynamic]u16,
+	face_count: u16,
+}
+mesh_builder: MeshBuilder
+MAX_FACES :: 1000
+update_chunk :: proc(position: ChunkPos) {
+	// free previous mesh if it exists
+	if chunks[position].mesh.vertexCount > 0 {
+		rl.UnloadMesh(chunks[position].mesh)
+	}
+	mesh_builder = MeshBuilder {
+		vertices  = make([dynamic]f32, 0, MAX_FACES * 12),
+		texcoords = make([dynamic]f32, 0, MAX_FACES * 8),
+		normals   = make([dynamic]f32, 0, MAX_FACES * 12),
+		indices   = make([dynamic]u16, 0, MAX_FACES * 6),
+	}
 	for block, index in chunks[position].blocks {
 		if (block == .empty) {continue}
 		coordinate := index_to_coordinate(index)
 		coordinate[0] += f32(position.x) * CHUNK_X
 		coordinate[2] += f32(position.z) * CHUNK_Z
-		render_block(&blocks[fmt.tprint(block)], coordinate)
+		add_block(block, coordinate)
 	}
+	chunks[position].mesh = build_mesh()
+	chunks[position].dirty = false
+	delete(mesh_builder.vertices)
+	delete(mesh_builder.texcoords)
+	delete(mesh_builder.normals)
+	delete(mesh_builder.indices)
 }
-
-
-render_block :: proc(block: ^Block, coordinate: rl.Vector3) {
-
-	render_face(.front, block.textures.front, coordinate)
-	render_face(.left, block.textures.left, coordinate)
-	render_face(.right, block.textures.right, coordinate)
-	render_face(.back, block.textures.back, coordinate)
-	render_face(.top, block.textures.top, coordinate)
-	render_face(.bottom, block.textures.bottom, coordinate)
+render_chunk :: proc(position: ChunkPos) {
+	rl.DrawMesh(chunks[position].mesh, material, rl.Matrix(1))
 }
-render_face :: proc(side: Side, texture: ^rl.Texture2D, coordinate: rl.Vector3) {
-	mesh := rl.GenMeshPlane(1, 1, 1, 1)
-	model := rl.LoadModelFromMesh(mesh)
-	defer rl.UnloadModel(model)
-	rl.SetMaterialTexture(&model.materials[0], .ALBEDO, texture^)
-	#partial switch (side) {
-	case .front:
-		model.transform = rl.MatrixRotateX(math.PI / 2)
-		rl.DrawModel(model, coordinate + rl.Vector3{.5, .5, 1}, 1, rl.WHITE)
-	case .back:
-		model.transform = rl.MatrixRotateXYZ(rl.Vector3{-math.PI / 2, math.PI, 0})
-		rl.DrawModel(model, coordinate + rl.Vector3{.5, .5, 0}, 1, rl.WHITE)
-	case .left:
-		model.transform = rl.MatrixRotateXYZ(rl.Vector3{math.PI / 2, 0, -math.PI / 2})
-		rl.DrawModel(model, coordinate + rl.Vector3{1, .5, .5}, 1, rl.WHITE)
-	case .right:
-		model.transform = rl.MatrixRotateXYZ(rl.Vector3{math.PI / 2, 0, math.PI / 2})
-		rl.DrawModel(model, coordinate + rl.Vector3{0, .5, .5}, 1, rl.WHITE)
-	case .top:
-		rl.DrawModel(model, coordinate + rl.Vector3{.5, 1, .5}, 1, rl.WHITE)
-	case .bottom:
-		model.transform = rl.MatrixRotateZ(math.PI)
-		rl.DrawModel(model, coordinate + rl.Vector3{.5, 0, .5}, 1, rl.WHITE)
+build_mesh :: proc() -> rl.Mesh {
+	mesh := rl.Mesh{}
+	mesh.vertexCount = i32(mesh_builder.face_count * 4)
+	mesh.triangleCount = i32(mesh_builder.face_count * 2)
+
+	mesh.vertices = raw_data(mesh_builder.vertices)
+	mesh.texcoords = raw_data(mesh_builder.texcoords)
+	mesh.normals = raw_data(mesh_builder.normals)
+	mesh.indices = raw_data(mesh_builder.indices)
+	rl.UploadMesh(&mesh, false)
+	return mesh
+}
+add_block :: proc(block: BlockID, coordinate: rl.Vector3) {
+	x := coordinate[0]
+	y := coordinate[1]
+	z := coordinate[2]
+	add_face(
+		{x, y + 1, z},
+		{x, y + 1, z + 1},
+		{x + 1, y + 1, z + 1},
+		{x + 1, y + 1, z},
+		block,
+		.top,
+	)
+	add_face({x, y, z + 1}, {x, y, z}, {x + 1, y, z}, {x + 1, y, z + 1}, block, .bottom)
+	add_face(
+		{x, y, z + 1},
+		{x + 1, y, z + 1},
+		{x + 1, y + 1, z + 1},
+		{x, y + 1, z + 1},
+		block,
+		.front,
+	)
+	add_face({x + 1, y, z}, {x, y, z}, {x, y + 1, z}, {x + 1, y + 1, z}, block, .back)
+	add_face(
+		{x + 1, y, z + 1},
+		{x + 1, y, z},
+		{x + 1, y + 1, z},
+		{x + 1, y + 1, z + 1},
+		block,
+		.right,
+	)
+	add_face({x, y, z}, {x, y, z + 1}, {x, y + 1, z + 1}, {x, y + 1, z}, block, .left)
+}
+// p0..p3: quad corners in counter-clockwise order
+add_face :: proc(p0, p1, p2, p3: rl.Vector3, block: BlockID, side: Side) {
+	normal := normals[side]
+	base := u16(mesh_builder.face_count * 4)
+
+	// vertices (4 corners × 3 floats)
+	verts := [4]rl.Vector3{p0, p1, p2, p3}
+	for v in verts {
+		append(&mesh_builder.vertices, v.x, v.y, v.z)
 	}
+	// UVs from atlas tile
+	uvs := blocks[block].atlas_uv_per_face[side]
+	if uvs[0] == {0, 0} {
+		// use default texture since one hasn't been set
+		uvs = blocks[block].atlas_uv_per_face[6]
+	}
+	for uv in uvs {
+		append(&mesh_builder.texcoords, uv[0], uv[1])
+	}
+
+	// normals (same for all 4 verts on a flat face)
+	for _ in 0 ..< 4 {
+		append(&mesh_builder.normals, normal.x, normal.y, normal.z)
+	}
+
+	// two triangles: 0-1-2 and 0-2-3
+	append(&mesh_builder.indices, base + 0, base + 1, base + 2, base + 0, base + 2, base + 3)
+
+	mesh_builder.face_count += 1
 }

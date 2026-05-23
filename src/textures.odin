@@ -7,27 +7,31 @@ import "core:reflect"
 import "core:strings"
 import rl "vendor:raylib"
 MAX_TILE_SIZE :: 60
-BlockSide :: struct {
-	block: BlockID,
-	side:  Side,
+Block :: struct {
+	name:              string,
+	atlas_uv_per_face: [7][4][2]f32,
 }
-BlockNew :: struct {
-	name:     string,
-	textures: [7][2]i32,
+
+BlockID :: enum u16 {
+	empty,
+	stone,
+	stone_cobble,
+	stone_brick,
+	oak_planks,
 }
-blocks_new: map[BlockID]BlockNew
-make_atlas :: proc() {
-	blocks_new := make(map[BlockID]BlockNew)
+blocks: map[BlockID]Block
+make_atlas :: proc() -> rl.Texture {
+	blocks = make(map[BlockID]Block)
 	texture_dir, err := os.open("assets/textures")
 	if (err != 0) {
 		fmt.println("Could not open textures directory")
-		return
+		return rl.LoadTexture("")
 	}
 	defer os.close(texture_dir)
 	file_infos, read_err := os.read_all_directory(texture_dir, context.allocator)
 	if (read_err != 0) {
 		fmt.println("Couldn't read textures directory")
-		return
+		return rl.LoadTexture("")
 	}
 
 	cols := i32(math.sqrt_f16(f16(len(file_infos) + 1)))
@@ -46,9 +50,9 @@ make_atlas :: proc() {
 		} else {
 			current_col += 1
 		}
-		old, exists := blocks_new[block]
+		old, exists := blocks[block]
 		if !exists {
-			old = new(BlockNew)^
+			old = new(Block)^
 
 			output, _ := strings.replace_all(strings.to_ada_case(name_split[0]), "_", " ")
 			old.name = output
@@ -72,18 +76,26 @@ make_atlas :: proc() {
 		// Blit tile onto canvas
 		rl.ImageDraw(&canvas, image, src, dst, rl.WHITE)
 		fmt.println(block, current_col * MAX_TILE_SIZE, current_row * MAX_TILE_SIZE)
-		if (len(name_split) < 2) {
-			old.textures[6] = [2]i32{current_col, current_row}
-			blocks_new[block] = old
-			continue
+		side_str := "all"
+		if (len(name_split) > 1) {
+			side_str = name_split[1]
 		}
-		side := reflect.enum_from_name(Side, name_split[1]) or_continue
-		old.textures[side] = [2]i32{current_col, current_row}
-		blocks_new[block] = old
+		side := reflect.enum_from_name(Side, side_str) or_else Side.all
+		u0 := f32(current_col) / f32(cols)
+		v0 := f32(current_row) / f32(rows)
+		old.atlas_uv_per_face[side] = {
+			{u0, v0},
+			{u0 + 1 / f32(cols), v0},
+			{u0 + 1 / f32(cols), v0 + 1 / f32(rows)},
+			{u0, v0 + 1 / f32(rows)},
+		}
+		blocks[block] = old
 
 	}
+
 	rl.ExportImage(canvas, "assets/atlas.png")
-	for block in blocks_new {
-	}
+	texture := rl.LoadTextureFromImage(canvas)
+	rl.SetTextureFilter(texture, .POINT)
+	return texture
 
 }

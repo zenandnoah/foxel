@@ -84,5 +84,5 @@ load_chunk :: proc(position: ChunkPos, world: string) {
 		chunk.blocks[(index - 1) / 2] = BlockID(first_byte + byte)
 	}
 	chunks[position] = chunk
-	update_chunk(position)
+	update_chunk_mesh(position)
 }

@@ -32,7 +32,7 @@ main :: proc() {
 		rl.BeginMode3D(camera)
 		for chunk in chunks {
 			if chunks[chunk].dirty {
-				update_chunk(chunk)
+				update_chunk_mesh(chunk)
 			}
 			render_chunk(chunk)
 		}

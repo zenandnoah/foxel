@@ -1,6 +1,7 @@
 package foxel
 
 import "core:fmt"
+import "core:mem"
 import rl "vendor:raylib"
 
 Side :: enum {
@@ -30,10 +31,10 @@ update_render_distance :: proc(render_distance: i32) {
 main :: proc() {
 	when ODIN_DEBUG {
 		track: mem.Tracking_Allocator
-		mem.tracking_allocator_init(&track)
-		context.allocator = mem.tracking_allocator(track)
+		mem.tracking_allocator_init(&track, context.allocator)
+		context.allocator = mem.tracking_allocator(&track)
 		defer {
-			if len(track.allocation_map > 0) {
+			if len(track.allocation_map) > 0 {
 				fmt.print("didn't free: ", len(track.allocation_map))
 				for _, entry in track.allocation_map {
 					fmt.printfln("%v bytes at %v", entry.size, entry.location)

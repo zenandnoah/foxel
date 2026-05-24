@@ -112,8 +112,13 @@ save_chunk :: proc(position: ChunkPos, world: string) {
 		fmt.tprintf("worlds/%s/%i_%i.cnk", world, position.x, position.z),
 		buf[:],
 	)
+	delete(buf)
+	delete(palette)
+	delete(reverse_palette)
+	delete(blocks)
 	if err != nil do return
 	delete_key(&chunks, position)
+
 
 }
 
@@ -139,7 +144,8 @@ load_chunk :: proc(position: ChunkPos, world: string) {
 	for i := u16(0); i < header.palette_len; i += 1 {
 		string_len := int(data[offset])
 		start := offset + 1
-		append(&palette, strings.clone(string(data[start:start + string_len])))
+		string := strings.clone(string(data[start:start + string_len]))
+		append(&palette, string)
 		offset += string_len + 1
 	}
 	rle_entries := slice.reinterpret([]RLEPair, data[offset:])
@@ -153,4 +159,9 @@ load_chunk :: proc(position: ChunkPos, world: string) {
 	}
 	chunks[position] = chunk
 	update_chunk_mesh(position)
+	for &string in palette {
+		delete(string)
+	}
+	delete(palette)
+
 }

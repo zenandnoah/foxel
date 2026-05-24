@@ -36,6 +36,7 @@ update_chunk_mesh :: proc(position: ChunkPos) {
 		add_block(block, coordinate)
 	}
 	chunks[position].mesh = build_mesh()
+	delete(mesh_builder.vertices)
 	chunks[position].dirty = false
 }
 render_chunk :: proc(position: ChunkPos) {

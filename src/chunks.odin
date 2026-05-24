@@ -90,7 +90,6 @@ save_chunk :: proc(position: ChunkPos, world: string) {
 			append(&palette, u8(len(name)))
 			append_elems(&palette, ..transmute([]u8)name)
 			index += 1
-			fmt.println("Added block to palette: ", name, index)
 			first_time = false
 		}
 
@@ -114,8 +113,7 @@ save_chunk :: proc(position: ChunkPos, world: string) {
 		buf[:],
 	)
 	if err != nil do return
-	free(&palette)
-	free(chunks[position])
+	fmt.println("?")
 	delete_key(&chunks, position)
 
 }
@@ -139,18 +137,13 @@ load_chunk :: proc(position: ChunkPos, world: string) {
 	block_index: u16
 	offset := size_of(ChunkHeader)
 	palette := make([dynamic]string)
-	fmt.println(header)
 	for i := u16(0); i < header.palette_len; i += 1 {
 		string_len := int(data[offset])
-		fmt.println(string_len)
 		start := offset + 1
 		append(&palette, strings.clone(string(data[start:start + string_len])))
-		fmt.println(palette[i])
 		offset += string_len + 1
-		fmt.println(offset)
 	}
 	rle_entries := slice.reinterpret([]RLEPair, data[offset:])
-	fmt.println(rle_entries)
 	block: u16
 	for entry, index in rle_entries {
 		for i := u16(0); i < entry.length; i += 1 {

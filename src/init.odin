@@ -1,8 +1,8 @@
 package foxel
-import "core:fmt"
+import "core:strings"
 import rl "vendor:raylib"
 RESOLUTION_WIDTH :: 1920
-RESOLUTION_HEIGHT :: 1080
+RESOLUTION_HEIGHT :: 1000
 normals: [6]rl.Vector3
 material: rl.Material
 atlas: rl.Texture
@@ -32,6 +32,7 @@ init :: proc() {
 	atlas = make_atlas()
 	material = rl.LoadMaterialDefault()
 	rl.SetMaterialTexture(&material, .ALBEDO, atlas)
+	strings.builder_init_none(&command_builder)
 }
 deinit :: proc() {
 	unload_fonts()

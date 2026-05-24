@@ -36,6 +36,7 @@ make_atlas :: proc() -> rl.Texture {
 	current_row: i32
 	current_col: i32
 	canvas := rl.GenImageColor(cols * MAX_TILE_SIZE, rows * MAX_TILE_SIZE, rl.BLANK)
+	blocks["empty"] = Block{}
 	for file in file_infos {
 		name := strings.trim_suffix(file.name, ".png")
 		name_split := strings.split(name, "-") or_continue
@@ -52,8 +53,8 @@ make_atlas :: proc() -> rl.Texture {
 
 			output, _ := strings.replace_all(strings.to_ada_case(name_split[0]), "_", " ")
 			old.name = output
-			id := append(&block_ids, block)
-			old.temp_id = u16(id)
+			append(&block_ids, block)
+			old.temp_id = u16(len(block_ids) - 1)
 		}
 		image := rl.LoadImage(fmt.ctprintf("assets/textures/%s", file.name))
 		dst := rl.Rectangle {
@@ -73,7 +74,6 @@ make_atlas :: proc() -> rl.Texture {
 
 		// Blit tile onto canvas
 		rl.ImageDraw(&canvas, image, src, dst, rl.WHITE)
-		fmt.println(block, current_col * MAX_TILE_SIZE, current_row * MAX_TILE_SIZE)
 		side_str := "all"
 		if (len(name_split) > 1) {
 			side_str = name_split[1]
@@ -90,6 +90,8 @@ make_atlas :: proc() -> rl.Texture {
 		blocks[block] = old
 
 	}
+	fmt.println(blocks)
+	fmt.println(block_ids)
 
 	rl.ExportImage(canvas, "assets/atlas.png")
 	texture := rl.LoadTextureFromImage(canvas)

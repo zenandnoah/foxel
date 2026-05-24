@@ -68,7 +68,6 @@ main :: proc() {
 		for chunk in chunks {
 
 			if !chunks[chunk].should_be_loaded {
-				fmt.println("hm")
 				save_chunk(chunk, "test")
 				continue
 			}

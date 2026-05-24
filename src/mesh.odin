@@ -1,5 +1,6 @@
 package foxel
 
+import "core:fmt"
 import rl "vendor:raylib"
 MeshBuilder :: struct {
 	vertices:   [dynamic]f32,
@@ -13,6 +14,12 @@ MAX_FACES :: 1000
 update_chunk_mesh :: proc(position: ChunkPos) {
 	// free previous mesh if it exists
 	if chunks[position].mesh.vertexCount > 0 {
+		mesh := chunks[position].mesh
+		mesh.vertices = nil
+		mesh.texcoords = nil
+		mesh.normals = nil
+		mesh.indices = nil
+		chunks[position].mesh = mesh
 		rl.UnloadMesh(chunks[position].mesh)
 	}
 	mesh_builder = MeshBuilder {
@@ -30,10 +37,6 @@ update_chunk_mesh :: proc(position: ChunkPos) {
 	}
 	chunks[position].mesh = build_mesh()
 	chunks[position].dirty = false
-	delete(mesh_builder.vertices)
-	delete(mesh_builder.texcoords)
-	delete(mesh_builder.normals)
-	delete(mesh_builder.indices)
 }
 render_chunk :: proc(position: ChunkPos) {
 	rl.DrawMesh(chunks[position].mesh, material, rl.Matrix(1))
@@ -48,6 +51,7 @@ build_mesh :: proc() -> rl.Mesh {
 	mesh.texcoords = raw_data(mesh_builder.texcoords)
 	mesh.normals = raw_data(mesh_builder.normals)
 	mesh.indices = raw_data(mesh_builder.indices)
+
 	rl.UploadMesh(&mesh, false)
 	return mesh
 }

@@ -1,14 +1,47 @@
 package foxel
 
 import "core:fmt"
+import "core:strings"
 import rl "vendor:raylib"
 mono: rl.Font
 MIDDLE_X :: RESOLUTION_WIDTH / 2
 MIDDLE_Y :: RESOLUTION_HEIGHT / 2
 CURSOR_LEN :: 20
 CURSOR_THICK :: 2
+command_open: bool
+command_builder: strings.Builder
+key_pressed: rl.KeyboardKey
 draw_gui :: proc(camera: ^rl.Camera3D) {
+	key_pressed = rl.GetKeyPressed()
 	rl.DrawFPS(10, 40)
+	if (key_pressed == .SLASH) {
+		command_open = true
+	}
+	if command_open {
+		char := rl.GetCharPressed()
+
+		if char != 0 {
+
+			strings.write_rune(&command_builder, char)
+		}
+		#partial switch (key_pressed) {
+		case .BACKSPACE:
+			strings.pop_rune(&command_builder)
+		case .ENTER:
+			command_open = false
+			handle_command(strings.to_string(command_builder))
+			strings.builder_init_none(&command_builder)
+			return
+		}
+		rl.DrawRectangle(
+			0,
+			RESOLUTION_HEIGHT - 30,
+			RESOLUTION_WIDTH,
+			30,
+			rl.ColorAlpha(rl.BLACK, .5),
+		)
+		rl.DrawText(strings.to_cstring(&command_builder), 5, RESOLUTION_HEIGHT - 25, 20, rl.WHITE)
+	}
 	rl.DrawTextEx(
 		mono,
 		fmt.ctprintf(

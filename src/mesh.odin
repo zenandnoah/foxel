@@ -22,7 +22,7 @@ update_chunk_mesh :: proc(position: ChunkPos) {
 		indices   = make([dynamic]u16, 0, MAX_FACES * 6),
 	}
 	for block, index in chunks[position].blocks {
-		if (block == .empty) {continue}
+		if (block == 0) {continue}
 		coordinate := index_to_coordinate(index)
 		coordinate[0] += f32(position.x) * CHUNK_X
 		coordinate[2] += f32(position.z) * CHUNK_Z
@@ -51,7 +51,8 @@ build_mesh :: proc() -> rl.Mesh {
 	rl.UploadMesh(&mesh, false)
 	return mesh
 }
-add_block :: proc(block: BlockID, coordinate: rl.Vector3) {
+add_block :: proc(block: u16, coordinate: rl.Vector3) {
+	block_string := block_ids[block]
 	x := coordinate[0]
 	y := coordinate[1]
 	z := coordinate[2]
@@ -60,31 +61,31 @@ add_block :: proc(block: BlockID, coordinate: rl.Vector3) {
 		{x, y + 1, z + 1},
 		{x + 1, y + 1, z + 1},
 		{x + 1, y + 1, z},
-		block,
+		block_string,
 		.top,
 	)
-	add_face({x, y, z + 1}, {x, y, z}, {x + 1, y, z}, {x + 1, y, z + 1}, block, .bottom)
+	add_face({x, y, z + 1}, {x, y, z}, {x + 1, y, z}, {x + 1, y, z + 1}, block_string, .bottom)
 	add_face(
 		{x, y, z + 1},
 		{x + 1, y, z + 1},
 		{x + 1, y + 1, z + 1},
 		{x, y + 1, z + 1},
-		block,
+		block_string,
 		.front,
 	)
-	add_face({x + 1, y, z}, {x, y, z}, {x, y + 1, z}, {x + 1, y + 1, z}, block, .back)
+	add_face({x + 1, y, z}, {x, y, z}, {x, y + 1, z}, {x + 1, y + 1, z}, block_string, .back)
 	add_face(
 		{x + 1, y, z + 1},
 		{x + 1, y, z},
 		{x + 1, y + 1, z},
 		{x + 1, y + 1, z + 1},
-		block,
+		block_string,
 		.right,
 	)
-	add_face({x, y, z}, {x, y, z + 1}, {x, y + 1, z + 1}, {x, y + 1, z}, block, .left)
+	add_face({x, y, z}, {x, y, z + 1}, {x, y + 1, z + 1}, {x, y + 1, z}, block_string, .left)
 }
 // p0..p3: quad corners in counter-clockwise order
-add_face :: proc(p0, p1, p2, p3: rl.Vector3, block: BlockID, side: Side) {
+add_face :: proc(p0, p1, p2, p3: rl.Vector3, block: string, side: Side) {
 	normal := normals[side]
 	base := u16(mesh_builder.face_count * 4)
 

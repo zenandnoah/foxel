@@ -38,11 +38,10 @@ get_voxel_hit :: proc() -> (hit: bool, block_pos: rl.Vector3, normal: rl.Vector3
 		idx := coordinate_to_index(rl.Vector3{f32(lx), f32(by), f32(lz)})
 
 
-		if chunk.blocks[idx] != .empty {
+		if chunk.blocks[idx] != 0 {
 			return true, rl.Vector3{f32(bx), f32(by), f32(bz)}, normal
 		}
 	}
 
 	return false, rl.Vector3{}, rl.Vector3{}
 }
-

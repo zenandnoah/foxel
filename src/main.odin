@@ -28,10 +28,23 @@ update_render_distance :: proc(render_distance: i32) {
 	}
 }
 main :: proc() {
+	when ODIN_DEBUG {
+		track: mem.Tracking_Allocator
+		mem.tracking_allocator_init(&track)
+		context.allocator = mem.tracking_allocator(track)
+		defer {
+			if len(track.allocation_map > 0) {
+				fmt.print("didn't free: ", len(track.allocation_map))
+				for _, entry in track.allocation_map {
+					fmt.printfln("%v bytes at %v", entry.size, entry.location)
+				}
+			}
 
+		}
+	}
 	init()
 	defer deinit()
-	update_render_distance(10)
+	update_render_distance(1)
 	// chunk_one.blocks[0] = .stone
 	// chunk_one.blocks[0] = .stone
 	// chunks[ChunkPos{0,0}].blocks[coordinate_to_index(rl.Vector3{3,0,0})] = .stone_cobble
@@ -42,9 +55,8 @@ main :: proc() {
 				chunk.z + i32(camera.position.z / CHUNK_Z),
 			}
 			_, loaded := &chunks[chunk_pos]
-			if !loaded {load_chunk(chunk_pos, "test")
-				fmt.println(chunk_pos)
-			}
+			if !loaded do load_chunk(chunk_pos, "test")
+
 			chunks[chunk_pos].should_be_loaded = true
 		}
 

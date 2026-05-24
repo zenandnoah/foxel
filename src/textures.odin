@@ -9,19 +9,15 @@ import rl "vendor:raylib"
 MAX_TILE_SIZE :: 60
 Block :: struct {
 	name:              string,
+	temp_id:           u16,
 	atlas_uv_per_face: [7][4][2]f32,
 }
 
-BlockID :: enum u16 {
-	empty,
-	stone,
-	stone_cobble,
-	stone_brick,
-	oak_planks,
-}
-blocks: map[BlockID]Block
+blocks: map[string]Block
+block_ids: [dynamic]string
 make_atlas :: proc() -> rl.Texture {
-	blocks = make(map[BlockID]Block)
+	append(&block_ids, "empty")
+	blocks = make(map[string]Block)
 	texture_dir, err := os.open("assets/textures")
 	if (err != 0) {
 		fmt.println("Could not open textures directory")
@@ -43,7 +39,7 @@ make_atlas :: proc() -> rl.Texture {
 	for file in file_infos {
 		name := strings.trim_suffix(file.name, ".png")
 		name_split := strings.split(name, "-") or_continue
-		block := reflect.enum_from_name(BlockID, name_split[0]) or_continue
+		block := name_split[0]
 		if current_col == cols - 1 {
 			current_col = 0
 			current_row += 1
@@ -56,6 +52,8 @@ make_atlas :: proc() -> rl.Texture {
 
 			output, _ := strings.replace_all(strings.to_ada_case(name_split[0]), "_", " ")
 			old.name = output
+			id := append(&block_ids, block)
+			old.temp_id = u16(id)
 		}
 		image := rl.LoadImage(fmt.ctprintf("assets/textures/%s", file.name))
 		dst := rl.Rectangle {

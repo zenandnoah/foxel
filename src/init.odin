@@ -1,4 +1,5 @@
 package foxel
+import "core:fmt"
 import "core:strings"
 import rl "vendor:raylib"
 RESOLUTION_WIDTH :: 1920
@@ -34,8 +35,26 @@ init :: proc() {
 	rl.SetMaterialTexture(&material, .ALBEDO, atlas)
 	strings.builder_init_none(&command_builder)
 }
+unload_blocks :: proc() {
+	fmt.println(blocks)
+	for block in blocks {
+		delete(blocks[block].name)
+		delete_key(&blocks, block)
+	}
+	delete(blocks)
+	delete(block_ids)
+}
+unload_chunks :: proc() {
+	for chunk in chunks {
+		save_chunk(chunk, "test")
+	}
+	delete(chunks)
+	delete(chunk_pattern_to_render)
+}
 deinit :: proc() {
+	unload_chunks()
 	unload_fonts()
+	unload_blocks()
 	rl.UnloadTexture(atlas)
 	rl.CloseWindow()
 }

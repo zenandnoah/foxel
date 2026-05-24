@@ -49,12 +49,17 @@ make_atlas :: proc() -> rl.Texture {
 		}
 		old, exists := blocks[block]
 		if !exists {
-			old = new(Block)^
-
-			output, _ := strings.replace_all(strings.to_ada_case(name_split[0]), "_", " ")
-			old.name = output
+			old = Block{}
+			ada := strings.to_ada_case(name_split[0])
+			output, _ := strings.replace_all(ada, "_", " ")
+			old.name = strings.clone(output)
 			append(&block_ids, block)
 			old.temp_id = u16(len(block_ids) - 1)
+			delete(ada)
+			// if they are the same then nothing will be allocated, so deleting would cause invalid free
+			if output != ada {
+				delete(output)
+			}
 		}
 		image := rl.LoadImage(fmt.ctprintf("assets/textures/%s", file.name))
 		dst := rl.Rectangle {
@@ -88,7 +93,7 @@ make_atlas :: proc() -> rl.Texture {
 			{u0, v0 + 1 / f32(rows)},
 		}
 		blocks[block] = old
-
+		delete(name_split)
 	}
 
 	rl.ExportImage(canvas, "assets/atlas.png")

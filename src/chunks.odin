@@ -117,6 +117,7 @@ save_chunk :: proc(position: ChunkPos, world: string) {
 	delete(reverse_palette)
 	delete(blocks)
 	if err != nil do return
+	free(chunks[position])
 	delete_key(&chunks, position)
 
 

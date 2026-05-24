@@ -19,6 +19,7 @@ normal: rl.Vector3
 camera: rl.Camera3D
 chunk_pattern_to_render: [dynamic]ChunkPos
 update_render_distance :: proc(render_distance: i32) {
+	delete(chunk_pattern_to_render)
 	chunk_pattern_to_render = make([dynamic]ChunkPos)
 	for x: i32 = render_distance; x > -render_distance; x -= 1 {
 		for z: i32 = render_distance; z > -render_distance; z -= 1 {
@@ -45,7 +46,7 @@ main :: proc() {
 	}
 	init()
 	defer deinit()
-	update_render_distance(10)
+	update_render_distance(3)
 	// chunk_one.blocks[0] = .stone
 	// chunk_one.blocks[0] = .stone
 	// chunks[ChunkPos{0,0}].blocks[coordinate_to_index(rl.Vector3{3,0,0})] = .stone_cobble
@@ -87,10 +88,6 @@ main :: proc() {
 		draw_gui(&camera)
 		rl.UpdateCamera(&camera, .FREE)
 		rl.DisableCursor()
-	}
-	for chunk in chunks {
-		save_chunk(chunk, "test")
-
 	}
 
 }

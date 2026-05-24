@@ -37,6 +37,9 @@ update_chunk_mesh :: proc(position: ChunkPos) {
 	}
 	chunks[position].mesh = build_mesh()
 	delete(mesh_builder.vertices)
+	delete(mesh_builder.texcoords)
+	delete(mesh_builder.normals)
+	delete(mesh_builder.indices)
 	chunks[position].dirty = false
 }
 render_chunk :: proc(position: ChunkPos) {

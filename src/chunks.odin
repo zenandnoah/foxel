@@ -113,7 +113,6 @@ save_chunk :: proc(position: ChunkPos, world: string) {
 		buf[:],
 	)
 	if err != nil do return
-	fmt.println("?")
 	delete_key(&chunks, position)
 
 }

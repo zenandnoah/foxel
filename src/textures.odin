@@ -90,8 +90,6 @@ make_atlas :: proc() -> rl.Texture {
 		blocks[block] = old
 
 	}
-	fmt.println(blocks)
-	fmt.println(block_ids)
 
 	rl.ExportImage(canvas, "assets/atlas.png")
 	texture := rl.LoadTextureFromImage(canvas)

@@ -44,16 +44,18 @@ main :: proc() {
 	}
 	init()
 	defer deinit()
-	update_render_distance(1)
+	update_render_distance(10)
 	// chunk_one.blocks[0] = .stone
 	// chunk_one.blocks[0] = .stone
 	// chunks[ChunkPos{0,0}].blocks[coordinate_to_index(rl.Vector3{3,0,0})] = .stone_cobble
 	for !rl.WindowShouldClose() {
 		for chunk in chunk_pattern_to_render {
-			chunk_pos := ChunkPos {
-				chunk.x + i32(camera.position.x / CHUNK_X),
-				chunk.z + i32(camera.position.z / CHUNK_Z),
-			}
+			x := i32(camera.position.x) / CHUNK_X
+			z := i32(camera.position.z) / CHUNK_Z
+			// for negatives we should round up, otherwise the chunk we're in isnt the center
+			if camera.position.x < 0 do x -= 1
+			if camera.position.z < 0 do z -= 1
+			chunk_pos := ChunkPos{chunk.x + x, chunk.z + z}
 			_, loaded := &chunks[chunk_pos]
 			if !loaded do load_chunk(chunk_pos, "test")
 

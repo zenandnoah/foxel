@@ -2,6 +2,7 @@ package foxel
 import "core:fmt"
 import "core:strconv"
 import "core:strings"
+import "core:sync"
 import rl "vendor:raylib"
 handle_command :: proc(command: string) -> bool {
 	parts := strings.split(strings.to_lower(strings.trim_prefix(command, "/")), " ")
@@ -18,9 +19,11 @@ handle_command :: proc(command: string) -> bool {
 		x2 := strconv.parse_i64(parts[5]) or_return
 		y2 := strconv.parse_i64(parts[6]) or_return
 		z2 := strconv.parse_i64(parts[7]) or_return
+		sync.mutex_lock(&chunks_mutex)
 		for x in x1 ..= x2 {
 			for y in y1 ..= y2 {
 				for z in z1 ..= z2 {
+					// TODO: add mutex lock?
 					chunk := chunks[ChunkPos{i32(x) / CHUNK_X, i32(z) / CHUNK_Z}]
 					index := coordinate_to_index(rl.Vector3{f32(x), f32(y), f32(z)})
 					chunk.blocks[index] = block
@@ -28,6 +31,7 @@ handle_command :: proc(command: string) -> bool {
 				}
 			}
 		}
+		sync.mutex_unlock(&chunks_mutex)
 	}
 	return true
 }

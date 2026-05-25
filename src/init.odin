@@ -1,6 +1,7 @@
 package foxel
 import "core:fmt"
 import "core:strings"
+import "core:thread"
 import rl "vendor:raylib"
 RESOLUTION_WIDTH :: 1920
 RESOLUTION_HEIGHT :: 1000
@@ -34,9 +35,9 @@ init :: proc() {
 	material = rl.LoadMaterialDefault()
 	rl.SetMaterialTexture(&material, .ALBEDO, atlas)
 	strings.builder_init_none(&command_builder)
+	init_chunk_workers()
 }
 unload_blocks :: proc() {
-	fmt.println(blocks)
 	for block in blocks {
 		delete(blocks[block].name)
 		delete_key(&blocks, block)
@@ -46,8 +47,12 @@ unload_blocks :: proc() {
 }
 unload_chunks :: proc() {
 	for chunk in chunks {
-		save_chunk(chunk, "test")
+		fmt.println("saving in init")
+		queue_chunk_save(chunk)
 	}
+	thread.pool_finish(&chunk_pool)
+	fmt.println("finished saving")
+	thread.pool_destroy(&chunk_pool)
 	delete(chunks)
 	delete(chunk_pattern_to_render)
 }

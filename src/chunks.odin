@@ -5,6 +5,8 @@ import "core:mem"
 import "core:os"
 import "core:slice"
 import "core:strings"
+import "core:sync"
+import "core:thread"
 import rl "vendor:raylib"
 CHUNK_X :: 16
 CHUNK_Y :: 128
@@ -16,7 +18,8 @@ Chunk :: struct {
 	position:         ChunkPos,
 	dirty:            bool,
 	should_be_loaded: bool,
-	mesh:             rl.Mesh,
+	done_with_init:   bool,
+	mesh:             ^rl.Mesh,
 }
 ChunkPos :: struct {
 	x: i32,
@@ -38,6 +41,24 @@ ChunkHeader :: struct {
 	palette_is_long: bool,
 }
 chunks: map[ChunkPos]^Chunk
+chunks_mutex: sync.Mutex
+chunk_pool: thread.Pool
+init_chunk_workers :: proc() {
+	thread.pool_init(&chunk_pool, context.allocator, 4)
+	thread.pool_start(&chunk_pool)
+}
+queue_chunk_load :: proc(position: ChunkPos) {
+	fmt.println("queued: ", position)
+	task_data := new(ChunkPos)
+	task_data^ = position
+	thread.pool_add_task(&chunk_pool, context.allocator, chunk_load_worker, task_data)
+}
+queue_chunk_save :: proc(position: ChunkPos) {
+	fmt.println("queued: ", position)
+	task_data := new(ChunkPos)
+	task_data^ = position
+	thread.pool_add_task(&chunk_pool, context.allocator, chunk_save_worker, task_data)
+}
 generate_chunk :: proc(position: ChunkPos) {
 	chunk := new(Chunk)
 	chunk.position = position
@@ -46,7 +67,9 @@ generate_chunk :: proc(position: ChunkPos) {
 		if (index == 256) do break
 		block = stone_id
 	}
+	sync.mutex_lock(&chunks_mutex)
 	chunks[position] = chunk
+	sync.mutex_unlock(&chunks_mutex)
 	update_chunk_mesh(position)
 }
 index_to_coordinate :: proc(index: int) -> rl.Vector3 {
@@ -64,7 +87,13 @@ coordinate_to_index :: proc(coordinate: rl.Vector3) -> int {
 		int(coordinate[0]) \
 	)
 }
-save_chunk :: proc(position: ChunkPos, world: string) {
+
+chunk_save_worker :: proc(task: thread.Task) {
+	position := (cast(^ChunkPos)task.data)^
+	if !(position in chunks) {
+		fmt.println("very very very very bad")
+		return
+	}
 	header := ChunkHeader {
 		magic_number    = CHUNK_MAGIC_NUMBER,
 		version         = CHUNK_VERSION,
@@ -117,13 +146,18 @@ save_chunk :: proc(position: ChunkPos, world: string) {
 	delete(reverse_palette)
 	delete(blocks)
 	if err != nil do return
+	sync.mutex_lock(&chunks_mutex)
+	if chunks[position] != nil do free(chunks[position].mesh)
 	free(chunks[position])
 	delete_key(&chunks, position)
+	sync.mutex_unlock(&chunks_mutex)
+	free(task.data)
 
 
 }
 
-load_chunk :: proc(position: ChunkPos, world: string) {
+chunk_load_worker :: proc(task: thread.Task) {
+	position := (cast(^ChunkPos)task.data)^
 	file, err := os.open(fmt.tprintf("worlds/%s/%i_%i.cnk", world, position.x, position.z))
 	if err != nil {
 		generate_chunk(position)
@@ -137,6 +171,9 @@ load_chunk :: proc(position: ChunkPos, world: string) {
 	}
 	chunk := new(Chunk)
 	chunk.position = position
+	chunk.should_be_loaded = true
+	chunk.done_with_init = true
+	chunk.dirty = true
 	header := (^ChunkHeader)(raw_data(data))^
 	if header.magic_number != CHUNK_MAGIC_NUMBER do return
 	block_index: u16
@@ -152,17 +189,20 @@ load_chunk :: proc(position: ChunkPos, world: string) {
 	rle_entries := slice.reinterpret([]RLEPair, data[offset:])
 	block: u16
 	for entry, index in rle_entries {
+		block_name := palette[entry.block]
 		for i := u16(0); i < entry.length; i += 1 {
-			block_name := palette[entry.block]
 			chunk.blocks[block] = blocks[block_name].temp_id
 			block += 1
 		}
 	}
+	sync.mutex_lock(&chunks_mutex)
+	free(chunks[position])
 	chunks[position] = chunk
-	update_chunk_mesh(position)
+	sync.mutex_unlock(&chunks_mutex)
 	for &string in palette {
 		delete(string)
 	}
+	free(task.data)
 	delete(palette)
 
 }

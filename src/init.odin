@@ -14,7 +14,7 @@ init :: proc() {
 	rl.InitWindow(width, height, "foxel")
 
 	rl.SetTargetFPS(180)
-
+	rl.DisableCursor()
 	camera = rl.Camera3D {
 		position   = {0, 10, 10},
 		target     = {0, 0, 0},

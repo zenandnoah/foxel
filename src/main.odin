@@ -66,6 +66,7 @@ main :: proc() {
 	// chunk_one.blocks[0] = .stone
 	// chunk_one.blocks[0] = .stone
 	// chunks[ChunkPos{0,0}].blocks[coordinate_to_index(rl.Vector3{3,0,0})] = .stone_cobble
+	rl.DisableCursor()
 	for !rl.WindowShouldClose() {
 		for chunk in chunk_pattern_to_render {
 			x := i32(camera.position.x) / CHUNK_X
@@ -112,7 +113,6 @@ main :: proc() {
 		rl.EndMode3D()
 		draw_gui(&camera)
 		rl.UpdateCamera(&camera, .FREE)
-		rl.DisableCursor()
 	}
 
 }
